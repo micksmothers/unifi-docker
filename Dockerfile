@@ -1,10 +1,10 @@
-FROM ubuntu:xenial
+FROM ubuntu:18.04
 
 LABEL maintainer="Jacob Alberty <jacob.alberty@foundigital.com>"
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-ENV PKGURL=https://dl.ubnt.com/unifi/5.10.21/unifi_sysvinit_all.deb
+ARG PKGURL=https://dl.ubnt.com/unifi/5.12.72/unifi_sysvinit_all.deb
 
 ENV BASEDIR=/usr/lib/unifi \
     DATADIR=/unifi/data \
@@ -29,6 +29,8 @@ ENV BASEDIR=/usr/lib/unifi \
 RUN set -ex \
     && fetchDeps=' \
         ca-certificates \
+        dirmngr \
+        gpg \
         wget \
     ' \
     && apt-get update \
@@ -42,7 +44,7 @@ RUN set -ex \
                             hkp://p80.pool.sks-keyservers.net:80 \
                             keyserver.ubuntu.com \
                             hkp://keyserver.ubuntu.com:80 \
-                            pgp.mit.edu) ; do \
+                            pool.sks-keyservers.net) ; do \
         gpg --keyserver "$server" --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 && break || : ; \
     done \
     && gpg --batch --verify /usr/local/bin/gosu.asc /usr/local/bin/gosu \
@@ -79,7 +81,7 @@ EXPOSE 6789/tcp 8080/tcp 8443/tcp 8880/tcp 8843/tcp 3478/udp
 
 WORKDIR /unifi
 
-HEALTHCHECK CMD /usr/local/bin/docker-healthcheck.sh || exit 1
+HEALTHCHECK --start-period=5m CMD /usr/local/bin/docker-healthcheck.sh || exit 1
 
 # execute controller using JSVC like original debian package does
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]

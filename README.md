@@ -12,20 +12,24 @@ It is suggested you start running this as a non root user. The default right now
 
 | Tag | Description |
 |-----|-------------|
-| [`latest`, `stable`, `5.10`](https://github.com/jacobalberty/unifi-docker/blob/master/Dockerfile) | Tracks UniFi stable version - 5.10.21 as of 2019-04-06 |
+| [`latest`, `stable`, `5.12`](https://github.com/jacobalberty/unifi-docker/blob/master/Dockerfile) | Tracks UniFi stable version - 5.12.72 as of 2020-05-14 [Change Log 5-12-72](https://community.ui.com/releases/UniFi-Network-Controller-5-12-72/9ac72983-5130-4f58-b3ba-909f4d4bb5f9)|
 | [`lts`, `5.6`](https://github.com/jacobalberty/unifi-docker/blob/lts/Dockerfile) | Tracks UniFi LTS stable version - 5.6.40 as of 2018-09-10 |
-| [`sc`](https://github.com/jacobalberty/unifi-docker/blob/sc/Dockerfile) | Tracks UniFi "Stable Candidate", The latest stable candidate may flip between the two branches maintained by Ubuiqiti so it is advised you tag off of the version you want directly instead of the `sc` tag. |
+| [`rc`](https://github.com/jacobalberty/unifi-docker/blob/rc/Dockerfile) | Tracks UniFi "Release Candidate", The latest release candidate may flip between the two branches maintained by Ubiquiti so it is advised you tag off of the version you want directly instead of the `rc` tag. |
 
-### Latest Stable Candidate tags
+### Latest Release Candidate tags
 
 | Version | Latest Tag |
 |---------|------------|
-| 5.6.x   | [`5.6.39-sc`](https://github.com/jacobalberty/unifi-docker/blob/5.6.39-sc/Dockerfile) |
-| 5.10.x   | [`5.10.16-sc`](https://github.com/jacobalberty/unifi-docker/blob/5.10.16-sc/Dockerfile) |
+| 5.11.x   | [`5.11.48-rc`](https://github.com/jacobalberty/unifi-docker/blob/5.11.48-rc/Dockerfile) |
+| 5.12.x   | [`5.12.66-rc`](https://github.com/jacobalberty/unifi-docker/blob/5.12.66-rc/Dockerfile) |
 
-These tags generally track the UniFi APT repository. We do lead the repository a little when it comes to pushing the latest version. The latest version gets pushed when it moves from `stable candidate` to `stable` instead of waiting for it to hit the repository.
+These tags generally track the UniFi APT repository. We do lead the repository a little when it comes to pushing the latest version. The latest version gets pushed when it moves from `release candidate` to `stable` instead of waiting for it to hit the repository.
 
-In adition to these tags you may tag specific versions as well, for example `jacobalberty/unifi:5.6.40` will get you unifi 5.6.40 no matter what the current version is. Stable candidates now exist both under the `sc` tag and for tags with the extension `-sc` ie `jacobalberty/unifi:5.6.18-sc`. It is advised to use the specific versions as the `sc` tag may jump from 5.6.x to 5.8.x then back to 5.6.x as new stable candidates come out.
+In adition to these tags you may tag specific versions as well, for example `jacobalberty/unifi:5.6.40` will get you unifi 5.6.40 no matter what the current version is. Release candidates now exist both under the `rc` tag and for tags with the extension `-rc` ie `jacobalberty/unifi:5.6.18-rc`. It is advised to use the specific versions as the `rc` tag may jump from 5.6.x to 5.8.x then back to 5.6.x as new release candidates come out.
+
+#### Old `sc` tag
+
+The old `sc` tag has been deprecated and replaced with `rc` due to changes from ubnt. `sc` branch still exists just as a pointer to the new `rc` branch. whereas the version tags going forward will be under `-rc` instead.
 
 ## Description
 
@@ -62,6 +66,10 @@ docker-compose up -d
 ### Layer 3 Adoption
 
 The default example requires some l3 adoption method. You have a couple options to adopt.
+
+#### Force adoption IP
+
+Run UniFi Docker and open UniFi in browser. Go under Settings -> Controller and then enter the IP address of the Docker host machine in "Controller Hostname/IP", and check the "Override inform host with controller hostname/IP". Save settings and restart UniFi Docker container. 
 
 #### SSH Adoption
 
@@ -178,6 +186,18 @@ Default: `true`
 
 This is used to determine whether or not the UniFi service runs as a privileged (root) user. The default value is `true` but it is recommended to use `false` instead.
 
+### `UNIFI_HTTP_PORT`
+
+Default: `8080`
+
+This is the HTTP port used by the Web interface. Browsers will be redirected to the `UNIFI_HTTPS_PORT`.
+
+### `UNIFI_HTTPS_PORT`
+
+Default: `8443`
+
+This is the HTTPS port used by the Web interface.
+
 ### `UNIFI_UID` and `UNIFI_GID`
 
 Default: `999` for both
@@ -199,6 +219,12 @@ Ex:
 ```
 
 as a fix for https://community.ubnt.com/t5/UniFi-Routing-Switching/IMPORTANT-Debian-Ubuntu-users-MUST-READ-Updated-06-21/m-p/1968251#M48264
+
+### `JVM_EXTRA_OPTS`
+
+Default: `unset`
+
+Used to start the JVM with additional arguments.
 
 ### External MongoDB environment variables
 
@@ -246,7 +272,7 @@ While micro-service patterns try to avoid running multiple processes in a contai
 
 ## Init scripts
 
-You may now place init scripts to be launched during the unifi startup in /usr/local/unifi/init.d to perform any actions unique to your unifi setup. An example bash script to set up certificates is in `/usr/unifi/init.d/import.sh`.
+You may now place init scripts to be launched during the unifi startup in /usr/local/unifi/init.d to perform any actions unique to your unifi setup. An example bash script to set up certificates is in `/usr/unifi/init.d/import_cert`.
 
 ## Certificate Support
 
